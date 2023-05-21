@@ -86,42 +86,46 @@ class CrudController {
     }
 }
 
+function spread(array) {
+    return array ? array : []
+}
+
 export function makeCrud(app: Express, resourceName: string, crudOptions: CrudOptions) {
     const controller = new CrudController(crudOptions);
     if (crudOptions.globalMiddlewares) app.use(...crudOptions.globalMiddlewares);
 
     // get single record
     app.get(
-        `/${resourceName}/:id`,
-        ...crudOptions?.getMiddlewares,
+        `/${resourceName}/get/:id`,
+        ...spread(crudOptions?.getMiddlewares),
         controller.getCtrl.bind(controller)
     );
 
     // create
     app.put(
         `/${resourceName}`,
-        ...crudOptions?.createMiddlewares,
+        ...spread(crudOptions?.createMiddlewares),
         controller.createCtrl.bind(controller)
     )
 
     // edit
     app.post(
         `/${resourceName}/:id`,
-        ...crudOptions?.editMiddlewares,
+        ...spread(crudOptions?.editMiddlewares),
         controller.editCtrl.bind(controller)
     )
 
     // delete
     app.delete(
         `/${resourceName}/:id`,
-        ...crudOptions?.deleteMiddlewares,
+        ...spread(crudOptions?.deleteMiddlewares),
         controller.deleteCtrl.bind(controller)
     )
     
     // list
     app.get(
         `/${resourceName}/list`,
-        ...crudOptions.listMiddlewares,
+        ...spread(crudOptions?.listMiddlewares),
         controller.listCtrl.bind(controller)
     )
 }
