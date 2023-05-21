@@ -33,8 +33,7 @@ function deleter(id, tableName: string) {
 }
 
 async function getter(sql) {
-    const res = await rawquery(sql, QueryTypes.SELECT) as any
-    return res
+    return rawquery(sql, QueryTypes.SELECT) as any
 }
 
 function initCrud(app, entity, tableName) {
