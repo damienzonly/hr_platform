@@ -9,7 +9,7 @@ import escape from 'sql-escape-string'
 const port = process.env.HTTP_PORT || 5000;
 
 function creator(item, tableName: string) {
-    if (!_.isNil(item.id)) delete item.id;
+    if (!_.isNil(item?.id)) delete item.id;
 
     // sort item keys for insertion query order
     const entries = Object.entries(item)
@@ -36,12 +36,12 @@ async function getter(sql) {
     return rawquery(sql, QueryTypes.SELECT) as any
 }
 
-function initCrud(app, entity, tableName) {
+function initCrud(app, entity: string, tableName) {
     makeCrud(app, entity, {
-        creator: (req) => creator(req.body.item, entity),
-        deleter: req => deleter(req.params.id, entity),
-        getter: req => getter(`select * from hr_platform.${tableName} where id = ${req.params.id}`), // todo
-        lister: () => getter(`select * from hr_platform.${tableName}`), // todo
+        creator: (req) => creator(req.body.item, tableName),
+        deleter: req => deleter(req.params.id, tableName),
+        getter: req => getter(`select * from ${tableName} where id = ${req.params.id}`), // todo
+        lister: () => getter(`select * from ${tableName}`), // todo
         setter: () => getter(`select 1+1`) // todo
     })
 }
@@ -59,6 +59,6 @@ function initCrud(app, entity, tableName) {
         ["skill"],
     ]
 
-    entities.forEach(e => initCrud(app, e, e[1] || e[0]))
+    entities.forEach(e => initCrud(app, e[0], `hr_platform.${e[1] || e[0]}`))
     app.listen(port, () => logger.info(`server listening on port ${port}`));
 })();
