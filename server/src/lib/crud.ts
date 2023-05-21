@@ -106,14 +106,14 @@ export function makeCrud(app: Express, resourceName: string, crudOptions: CrudOp
 
     // edit
     app.post(
-        `/${resourceName}`,
+        `/${resourceName}/:id`,
         ...crudOptions.editMiddlewares,
         controller.editCtrl.bind(controller)
     )
 
     // delete
     app.delete(
-        `/${resourceName}`,
+        `/${resourceName}/:id`,
         ...crudOptions.deleteMiddlewares,
         controller.deleteCtrl.bind(controller)
     )
