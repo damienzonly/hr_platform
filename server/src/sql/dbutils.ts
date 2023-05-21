@@ -12,6 +12,6 @@ export const db = new Sequelize({
     logging: false
 })
 
-export const rawquery = (sql: string) => {
-    return db.query(sql, {type: QueryTypes.RAW})
+export const rawquery = (sql: string, type?: QueryTypes) => {
+    return db.query(sql, {type: type || QueryTypes.RAW})
 }
