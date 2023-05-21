@@ -1,3 +1,4 @@
+import { QueryTypes } from 'sequelize';
 import {app} from './http/app'
 import { makeCrud } from './lib/crud';
 import { logger } from './lib/logger';
@@ -24,24 +25,25 @@ function creator(item, tableName: string) {
         return value
     })
 
-    return rawquery(`insert into ${tableName} (${columns}) VALUES (${values}) returning id`)
+    return rawquery(`insert into ${tableName} (${columns}) VALUES (${values}) returning id`, QueryTypes.INSERT)
 }
 
 function deleter(id, tableName: string) {
-    return rawquery(`delete from ${tableName} where id=${id}`)
+    return rawquery(`delete from ${tableName} where id=${id}`, QueryTypes.DELETE)
 }
 
-function getter(projection: string[], tableName: string) {
-    return rawquery(`select`)
+async function getter(sql) {
+    const res = await rawquery(sql, QueryTypes.SELECT) as any
+    return res
 }
 
 function initCrud(app, entity, tableName) {
     makeCrud(app, entity, {
         creator: (req) => creator(req.body.item, entity),
         deleter: req => deleter(req.params.id, entity),
-        getter: req => rawquery(`select * from ${tableName} where id = ${req.params.id}`), // todo
-        lister: req => rawquery(`select * from ${tableName}`), // todo
-        setter: req => rawquery(`select 1+1`) // todo
+        getter: req => getter(`select * from hr_platform.${tableName} where id = ${req.params.id}`), // todo
+        lister: () => getter(`select * from hr_platform.${tableName}`), // todo
+        setter: () => getter(`select 1+1`) // todo
     })
 }
 
