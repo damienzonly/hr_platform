@@ -1,6 +1,6 @@
 import { QueryTypes } from 'sequelize';
 import {app} from './http/app'
-import { makeCrud } from './lib/crud';
+import { CrudOptions, makeCrud } from './lib/crud';
 import { logger } from './lib/logger';
 import {db, rawquery} from './sql/dbutils'
 import _ from 'lodash'
@@ -52,16 +52,18 @@ async function getter(sql) {
     return rawquery(sql, QueryTypes.SELECT) as any
 }
 
-function initCrud(app, entity: string, tableName = entity) {
+function initCrud(app, entity: string, tableName = entity, crudOptions?: CrudOptions, overrideCrudOptions = false) {
     tableName = `hr_platform.${entity}`
     logger.info(`initializing crud for ${entity}`);
-    makeCrud(app, entity, {
+    const o: CrudOptions  = overrideCrudOptions ? crudOptions : {
         creator: (req) => creator(req.body, tableName),
         deleter: req => deleter(req.params.id, tableName),
         getter: req => getter(`select * from ${tableName} where id = ${req.params.id}`), // todo
         lister: () => getter(`select * from ${tableName}`), // todo
-        setter: () => getter(`select 1+1`) // todo
-    })
+        setter: () => getter(`select 1+1`), // todo
+        ...crudOptions
+    }
+    makeCrud(app, entity, o);
 }
 
 ;(async () => {
