@@ -48,6 +48,67 @@
           }
         }
       }
+    },
+    "/hr_employee/list": {
+      "post": {
+        "tags": ["employee"],
+        "summary": "List employees",
+        "responses": {
+          "200": {
+            "description": "Successfully fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "properties": {
+                    "item": {
+                      "type":"object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hr_employee/{id}": {
+      "delete": {
+        "tags": ["employee"],
+        "summary": "Delete an employee",
+        "parameters": [{
+          "in": "path",
+          "name": "id",
+          "required": true
+        }],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "item": {
+                      "type":"object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
