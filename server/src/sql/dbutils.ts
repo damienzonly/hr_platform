@@ -10,7 +10,7 @@ export const db = new Sequelize({
     port: process.env.DB_PORT as any,
     username: process.env.DB_USER as any,
     password: process.env.DB_PASSWORD as any,
-    logging: false
+    logging: process.env.LOG_QUERIES === 'true' ? sql => logger.info(`Executing ${sql}`) : false
 })
 
 db

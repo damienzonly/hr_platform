@@ -28,3 +28,4 @@ services:
       - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASSWORD=password
+      - LOG_QUERIES=true
