@@ -53,21 +53,21 @@ class CrudController {
         let item = await this.opts.getter(req, res);
         if (this.opts.converFromDb) item = this.opts.converFromDb(item);
         await this.opts.afterGet?.(req, res, item);
-        reply(res, item);
+        reply(res, {item});
     }
 
     editCtrl: RequestHandler = async (req, res) => {
         await this.opts.beforeEdit?.(req, res);
         const item = await this.opts.setter(req, res);
         await this.opts.afterEdit?.(req, res, item);
-        reply(res, item);
+        reply(res, {item});
     }
 
     deleteCtrl: RequestHandler = async (req, res) => {
         await this.opts.beforeDelete?.(req, res);
         const item = await this.opts.deleter(req, res);
         await this.opts.afterDelete?.(req, res, item);
-        reply(res, item);
+        reply(res, {item});
     }
 
     listCtrl: RequestHandler = async (req, res) => {
@@ -75,14 +75,14 @@ class CrudController {
         let items = await this.opts.lister(req, res);
         if (this.opts.converFromDb) items = items.map(item => this.opts.converFromDb(item));
         await this.opts.afterList?.(req, res, items);
-        reply(res, items);
+        reply(res, {items});
     }
 
     createCtrl: RequestHandler = async (req, res) => {
         await this.opts.beforeCreate?.(req, res);
         const item = await this.opts.creator(req, res);
         await this.opts.afterCreate?.(req, res, item)
-        reply(res, item);
+        reply(res, {item});
     }
 }
 
