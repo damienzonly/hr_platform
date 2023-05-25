@@ -1,4 +1,5 @@
 import { QueryTypes, Sequelize } from "sequelize";
+import { logger } from "../lib/logger";
 
 
 export const db = new Sequelize({
@@ -10,6 +11,14 @@ export const db = new Sequelize({
     username: process.env.DB_USER as any,
     password: process.env.DB_PASSWORD as any,
     logging: false
+})
+
+db
+.addHook('afterConnect', () => {
+    logger.info("database connected")
+})
+.addHook('afterDisconnect', () => {
+    logger.error("database disconnected")
 })
 
 export const rawquery = (sql: string, type?: QueryTypes) => {
