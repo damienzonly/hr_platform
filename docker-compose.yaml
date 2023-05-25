@@ -10,5 +10,21 @@ services:
       - ./initdb/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - POSTGRES_PASSWORD=password
-volumes:
-  db:
+  swagger:
+    image: swaggerapi/swagger-ui
+    ports:
+      - 8080:8080
+    volumes:
+      - ./swagger.json:/data/swagger.json
+    environment:
+      - SWAGGER_JSON=/data/swagger.json
+  server:
+    build:
+      context: server
+    ports:
+      - 5000:5000
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=password
