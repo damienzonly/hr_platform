@@ -39,6 +39,7 @@ create table if not exists hr_platform.commission (
     id serial primary key,
     client_id integer not null references hr_platform.client (id),
     budget integer not null,
+    name varchar not null,
     start_date timestamp not null,
     duration integer not null
 );
