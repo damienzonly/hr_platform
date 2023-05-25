@@ -1,4 +1,5 @@
 import { Express, Request, RequestHandler, Response } from "express"
+import _ from 'lodash'
 
 export type HookCallback = (req?: Request, res?: Response) => any
 export type HookCallbackItem = (req?: Request, res?: Response, item?: any) => any
@@ -35,6 +36,13 @@ export interface CrudOptions {
     editMiddlewares?: RequestHandler[]
     getMiddlewares?: RequestHandler[]
     listMiddlewares?: RequestHandler[]
+
+    enableCreate?: boolean
+    enableEdit?: boolean
+    enableList?: boolean
+    enableDelete?: boolean
+    enableGet?: boolean
+    
 }
 
 export async function reply(res: Response, data: any, status = 200) {
@@ -95,35 +103,35 @@ export function makeCrud(app: Express, resourceName: string, crudOptions: CrudOp
     if (crudOptions.globalMiddlewares) app.use(...crudOptions.globalMiddlewares);
 
     // get single record
-    app.get(
+    if (_.isNil(crudOptions.enableGet) || crudOptions.enableGet) app.get(
         `/${resourceName}/get/:id`,
         ...spread(crudOptions?.getMiddlewares),
         controller.getCtrl.bind(controller)
     );
 
     // create
-    app.put(
+    if (_.isNil(crudOptions.enableCreate) || crudOptions.enableCreate) app.put(
         `/${resourceName}`,
         ...spread(crudOptions?.createMiddlewares),
         controller.createCtrl.bind(controller)
     )
 
     // edit
-    app.put(
+    if (_.isNil(crudOptions.enableEdit) || crudOptions.enableEdit) app.put(
         `/${resourceName}/:id`,
         ...spread(crudOptions?.editMiddlewares),
         controller.editCtrl.bind(controller)
     )
 
     // delete
-    app.delete(
+    if (_.isNil(crudOptions.enableDelete) || crudOptions.enableDelete) app.delete(
         `/${resourceName}/:id`,
         ...spread(crudOptions?.deleteMiddlewares),
         controller.deleteCtrl.bind(controller)
     )
     
     // list
-    app.post(
+    if (_.isNil(crudOptions.enableList) || crudOptions.enableList) app.post(
         `/${resourceName}/list`,
         ...spread(crudOptions?.listMiddlewares),
         controller.listCtrl.bind(controller)
