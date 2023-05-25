@@ -109,7 +109,7 @@ export function makeCrud(app: Express, resourceName: string, crudOptions: CrudOp
     )
 
     // edit
-    app.post(
+    app.put(
         `/${resourceName}/:id`,
         ...spread(crudOptions?.editMiddlewares),
         controller.editCtrl.bind(controller)
@@ -123,7 +123,7 @@ export function makeCrud(app: Express, resourceName: string, crudOptions: CrudOp
     )
     
     // list
-    app.get(
+    app.post(
         `/${resourceName}/list`,
         ...spread(crudOptions?.listMiddlewares),
         controller.listCtrl.bind(controller)
