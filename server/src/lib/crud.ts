@@ -141,22 +141,26 @@ export function makeCrud(app: Express, resourceName: string, crudOptions: CrudOp
 
 export interface FilterOrderParams {
     inclusive: boolean,
-    columns: {name: string, value: any, operator: 'ilike' | '>' | '<' | '=' | '!'}[],
+    columns?: {name: string, value: any, operator: 'ilike' | '>' | '<' | '=' | '!'}[],
     order?: {columnName: string, desc?: boolean}[]
 }
 
 export function filterOrder(opts: FilterOrderParams) {
+    if (!opts) return null;
     const binaryOperator = opts.inclusive ? "OR" : "AND";
-    const conditionChain = opts.columns.map(c => {
-        const isValueString = typeof c.value === 'string';
-        c.name = `"${c.name}"`;
-        const _value = c.value;
-        if (isValueString) c.value = `'${escape(c.value)}'`;
-        if (c.operator === '!') return `(NOT ${c.name} = ${c.value})`;
-        else if (c.operator === 'ilike') return `(${c.name} ilike '%${_value}%')`;
-        return `(${c.name} ${c.operator} ${c.value})`;
-    }).join(` ${binaryOperator} `);
-    if (!opts.order) return {conditionChain}
-    const orderChain = "order by " + opts.order.map(o => `${o.columnName} ${o.desc ? "DESC" : "ASC"}`).join(", ")
+    const orderChain = opts.order?
+        "order by " + opts.order.map(o => `${o.columnName} ${o.desc ? "DESC" : "ASC"}`).join(", ")
+        : ''
+    const conditionChain = opts.columns ?
+        opts.columns.map(c => {
+            const isValueString = typeof c.value === 'string';
+            c.name = `"${c.name}"`;
+            const _value = c.value;
+            if (isValueString) c.value = `'${escape(c.value)}'`;
+            if (c.operator === '!') return `(NOT ${c.name} = ${c.value})`;
+            else if (c.operator === 'ilike') return `(${c.name} ilike '%${_value}%')`;
+            return `(${c.name} ${c.operator} ${c.value})`;
+        }).join(` ${binaryOperator} `)
+        : ''
     return {conditionChain, orderChain}
 }
