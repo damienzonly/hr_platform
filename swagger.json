@@ -114,6 +114,15 @@
       "post": {
         "tags": ["billing"],
         "summary": "List bills",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilterOrder"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Successfully fetched",
@@ -155,6 +164,38 @@
           "surname": { "type": "string" },
           "email_address": { "type": "string" },
           "phone_number": { "type": "string" }
+        }
+      },
+      "FilterOrder": {
+        "type": "object",
+        "properties": {
+          "filtering": {
+            "type": "object",
+            "properties": {
+              "inclusive": {"type": "boolean", "required": ["inclusive"]},
+              "columns": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {"type": "string"},
+                    "operator": {"type": "string", "description": "one of 'ilike' | '>' | '<' | '=' | '!'"},
+                    "value": {"type": "string"}
+                  }
+                }
+              },
+              "order": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "columnName": {"type": "string"},
+                    "desc": {"type": "boolean"}
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
