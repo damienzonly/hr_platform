@@ -49,7 +49,7 @@ create table if not exists hr_platform.bills (
     source_billable_id integer not null references hr_platform.billable_entity (id),
     destination_billable_id integer not null references hr_platform.billable_entity (id),
     commission_id integer not null references hr_platform.commission (id),
-    bill_identifier_id integer not null,
+    bill_identifier integer not null,
     payed_date timestamp,
     iban varchar not null,
     amount float not null
@@ -168,7 +168,7 @@ VALUES
   (1, 1, '2023-01-01'),
   (2, 2, '2023-02-01');
 
-INSERT INTO hr_platform.bills (source_billable_id, destination_billable_id, commission_id, bill_identifier_id, payed_date, iban, amount)
+INSERT INTO hr_platform.bills (source_billable_id, destination_billable_id, commission_id, bill_identifier, payed_date, iban, amount)
 VALUES
   (3, 1, 1, 1, '2023-01-15', 'IT11111111111111111111', 500.00),
   (3, 1, 1, 2, '2023-01-20', 'IT11111111111111111111', 600.00),
