@@ -1,6 +1,6 @@
 import { QueryTypes } from 'sequelize';
 import {app} from './http/app'
-import { CrudOptions, makeCrud } from './lib/crud';
+import { CrudOptions, addFilterOrder, filterOrder, makeCrud } from './lib/crud';
 import { logger } from './lib/logger';
 import {db, rawquery} from './sql/dbutils'
 import _ from 'lodash'
@@ -82,8 +82,12 @@ function initCrud(app, entity: string, tableName = entity, crudOptions?: CrudOpt
 
     // lists custom controllers
     initCrud(app, 'billing', null, {
-        lister: (req, res) => {
-            const query = `
+        lister: (req: any, res) => {
+            const fo = filterOrder(req.body.filtering || {}, {
+                consultant_email: `"consultant"."email_address"`,
+                project_name: `"commission"."name"`
+            })
+            const q = `
                 SELECT
                     bills.id,
                     consultant.email_address AS consultant_email,
@@ -99,7 +103,7 @@ function initCrud(app, entity: string, tableName = entity, crudOptions?: CrudOpt
                     JOIN hr_platform.consultant ON team_of_commission.consultant_id = consultant.id
                     JOIN hr_platform.client ON commission.client_id = client.id
             `
-            return getter(query)
+            return getter(addFilterOrder(fo, q))
         },
         enableCreate: false, enableDelete: false, enableEdit: false, enableGet: false
     }, true)
