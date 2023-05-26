@@ -145,16 +145,18 @@ export interface FilterOrderParams {
     order?: {columnName: string, desc?: boolean}[]
 }
 
-export function filterOrder(opts: FilterOrderParams) {
+export function filterOrder(opts: FilterOrderParams, tablesMap?: {[x: string]: string}) {
     if (!opts) return null;
     const binaryOperator = opts.inclusive ? "OR" : "AND";
     const orderChain = opts.order?
         "order by " + opts.order.map(o => `${o.columnName} ${o.desc ? "DESC" : "ASC"}`).join(", ")
         : ''
     const conditionChain = opts.columns ?
-        opts.columns.map(c => {
+        "where " + opts.columns.map(c => {
             const isValueString = typeof c.value === 'string';
-            c.name = `"${c.name}"`;
+            const name = tablesMap?.[c.name] || c.name
+            const isComposite = name.indexOf('.') !== -1;
+            c.name = `${isComposite ? name : `"${name}"`}`;
             const _value = c.value;
             if (isValueString) c.value = `'${escape(c.value)}'`;
             if (c.operator === '!') return `(NOT ${c.name} = ${c.value})`;
@@ -163,4 +165,9 @@ export function filterOrder(opts: FilterOrderParams) {
         }).join(` ${binaryOperator} `)
         : ''
     return {conditionChain, orderChain}
+}
+
+export function addFilterOrder(fo: ReturnType<typeof filterOrder>, sql: string) {
+    const q = !fo ? "" : fo.conditionChain + '\n' + fo.orderChain
+    return sql + q;
 }
