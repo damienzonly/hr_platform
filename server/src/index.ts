@@ -80,36 +80,54 @@ function initCrud(app, entity: string, tableName = entity, crudOptions?: CrudOpt
         initCrud(app, entity)
     }
 
+    const enableListOnly = {enableCreate: false, enableDelete: false, enableEdit: false, enableGet: false} as any
+
     // lists custom controllers
     initCrud(app, 'billing', null, {
         lister: (req: any, res) => {
-            const fo = filterOrder(req.body.filtering || {}, {
+            return getter(addFilterOrder(filterOrder(req.body.filtering || {}, {
                 consultant_email: `"consultant"."email_address"`,
                 project_name: `"commission"."name"`
-            })
-            const q = `
-                SELECT
-                    bills.id,
-                    consultant.email_address AS consultant_email,
-                    client.company_name,
-                    commission.name as project_name,
-                    bills.amount,
-                    bills.payed_date,
-                    bills.bill_identifier,
-                    bills.payed_date
-                FROM
-                    hr_platform.bills
-                    JOIN hr_platform.billable_entity AS billable_entity_source ON bills.source_billable_id = billable_entity_source.id
-                    JOIN hr_platform.billable_entity AS billable_entity_destination ON bills.destination_billable_id = billable_entity_destination.id
-                    JOIN hr_platform.commission ON bills.commission_id = commission.id
-                    JOIN hr_platform.team_of_commission ON commission.id = team_of_commission.commission_id
-                    JOIN hr_platform.consultant ON team_of_commission.consultant_id = consultant.id
-                    JOIN hr_platform.client ON commission.client_id = client.id
-            `
-            return getter(addFilterOrder(fo, q))
+            }), `
+            select
+                bills.id,
+                consultant.email_address as consultant_email,
+                client.company_name,
+                commission.name as project_name,
+                bills.amount,
+                bills.payed_date,
+                bills.bill_identifier,
+                bills.payed_date
+            from hr_platform.bills
+                join hr_platform.billable_entity as billable_entity_source on bills.source_billable_id = billable_entity_source.id
+                join hr_platform.billable_entity as billable_entity_destination on bills.destination_billable_id = billable_entity_destination.id
+                join hr_platform.commission on bills.commission_id = commission.id
+                join hr_platform.team_of_commission on commission.id = team_of_commission.commission_id
+                join hr_platform.consultant on team_of_commission.consultant_id = consultant.id
+                join hr_platform.client on commission.client_id = client.id
+        `))
         },
-        enableCreate: false, enableDelete: false, enableEdit: false, enableGet: false
+        ...enableListOnly
     }, true)
+
+    initCrud(app, 'skillset', null, {
+        lister: (req: any, res) => {
+            return getter(addFilterOrder(filterOrder(req.body.filtering || {}, {
+                consultant_id: `"consultant"."id"`,
+                skill_name: `"skill"."name"`
+            }), `
+            select
+                consultant.id as consultant_id,
+                consultant.email_address,
+                skill.name as skill_name,
+                cv_skills.years_of_experience
+            from hr_platform.cv_skills
+            join hr_platform.consultant on consultant.id = cv_skills.consultant_id
+            join hr_platform.skill on skill.id = cv_skills.skill_id
+        `))
+        },
+        ...enableListOnly
+    })
 
     app.listen(port, () => logger.info(`server listening on port ${port}`));
 })();
