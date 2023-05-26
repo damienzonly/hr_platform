@@ -1,5 +1,5 @@
 import { Express, Request, RequestHandler, Response } from "express"
-import _ from 'lodash'
+import _, { escape, includes } from 'lodash'
 
 export type HookCallback = (req?: Request, res?: Response) => any
 export type HookCallbackItem = (req?: Request, res?: Response, item?: any) => any
@@ -136,4 +136,24 @@ export function makeCrud(app: Express, resourceName: string, crudOptions: CrudOp
         ...spread(crudOptions?.listMiddlewares),
         controller.listCtrl.bind(controller)
     )
+}
+
+export function filterOrder(opts: {
+    inclusive: boolean,
+    columns: {name: string, value: any, operator: 'ilike' | '>' | '<' | '=' | '!'}[],
+    order?: {columnName: string, desc?: boolean}[]
+}) {
+    const binaryOperator = opts.inclusive ? "OR" : "AND";
+    const conditionChain = opts.columns.map(c => {
+        const isValueString = typeof c.value === 'string';
+        c.name = `"${c.name}"`;
+        const _value = c.value;
+        if (isValueString) c.value = `'${escape(c.value)}'`;
+        if (c.operator === '!') return `(NOT ${c.name} = ${c.value})`;
+        else if (c.operator === 'ilike') return `(${c.name} ilike '%${_value}%')`;
+        return `(${c.name} ${c.operator} ${c.value})`;
+    }).join(` ${binaryOperator} `);
+    if (!opts.order) return {conditionChain}
+    const orderChain = "order by " + opts.order.map(o => `${o.columnName} ${o.desc ? "DESC" : "ASC"}`).join(", ")
+    return {conditionChain, orderChain}
 }
