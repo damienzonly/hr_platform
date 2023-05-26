@@ -138,11 +138,14 @@ export function makeCrud(app: Express, resourceName: string, crudOptions: CrudOp
     )
 }
 
-export function filterOrder(opts: {
+
+export interface FilterOrderParams {
     inclusive: boolean,
     columns: {name: string, value: any, operator: 'ilike' | '>' | '<' | '=' | '!'}[],
     order?: {columnName: string, desc?: boolean}[]
-}) {
+}
+
+export function filterOrder(opts: FilterOrderParams) {
     const binaryOperator = opts.inclusive ? "OR" : "AND";
     const conditionChain = opts.columns.map(c => {
         const isValueString = typeof c.value === 'string';
