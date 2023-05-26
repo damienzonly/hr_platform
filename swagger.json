@@ -109,6 +109,40 @@
           }
         }
       }
+    },
+    "/billing/list": {
+      "post": {
+        "tags": ["billing"],
+        "summary": "List bills",
+        "responses": {
+          "200": {
+            "description": "Successfully fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "properties": {
+                    "item": {
+                      "type":"object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "id of the bill"
+                        },
+                        "consultant_email": { "type": "string"},
+                        "company_name": { "type": "string"},
+                        "project_name": { "type": "string"},
+                        "amount": { "type": "integer"}
+                        
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

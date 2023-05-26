@@ -80,17 +80,30 @@ function initCrud(app, entity: string, tableName = entity, crudOptions?: CrudOpt
         initCrud(app, entity)
     }
 
-    // const entities = [
-    //     ["clients", "client"],
-    //     ["consultant"],
-    //     ["hr_employee", "hr_employee"],
-    //     ["billable_entity"],
-    //     ["bills"],
-    //     ["commission"],
-    //     ["skill"],
-    // ]
+    // lists custom controllers
+    initCrud(app, 'billing', null, {
+        lister: (req, res) => {
+            const query = `
+                SELECT
+                    bills.id,
+                    consultant.email_address AS consultant_email,
+                    client.company_name,
+                    commission.name as project_name,
+                    bills.amount
+                FROM
+                    hr_platform.bills
+                    JOIN hr_platform.billable_entity AS billable_entity_source ON bills.source_billable_id = billable_entity_source.id
+                    JOIN hr_platform.billable_entity AS billable_entity_destination ON bills.destination_billable_id = billable_entity_destination.id
+                    JOIN hr_platform.commission ON bills.commission_id = commission.id
+                    JOIN hr_platform.team_of_commission ON commission.id = team_of_commission.commission_id
+                    JOIN hr_platform.consultant ON team_of_commission.consultant_id = consultant.id
+                    JOIN hr_platform.client ON commission.client_id = client.id
+            `
+            return getter(query)
+        },
+        enableCreate: false, enableDelete: false, enableEdit: false, enableGet: false
+    }, true)
 
-    // entities.forEach(e => initCrud(app, e[0], `hr_platform.${e[1] || e[0]}`))
     app.listen(port, () => logger.info(`server listening on port ${port}`));
 })();
 
