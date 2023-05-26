@@ -129,6 +129,26 @@ function initCrud(app, entity: string, tableName = entity, crudOptions?: CrudOpt
         ...enableListOnly
     })
 
+    initCrud(app, 'commission_history', null, {
+        lister: (req: any, res) => {
+            return getter(addFilterOrder(filterOrder(req.body.filtering || {}, { project_name: `"commission"."name"` }), `
+            select
+                consultant.name,
+                consultant.surname,
+                consultant.email_address,
+                commission.name as project_name,
+                commission.budget,
+                team_of_commission.start_date
+            from hr_platform.team_of_commission
+            join hr_platform.commission on commission.id = team_of_commission.commission_id
+            join hr_platform.consultant on consultant.id = team_of_commission.consultant_id
+        `))
+        },
+        ...enableListOnly
+    })
+
+    
+
     app.listen(port, () => logger.info(`server listening on port ${port}`));
 })();
 
