@@ -75,7 +75,7 @@ create table if not exists hr_platform.cv_skills (
     id serial primary key,
     consultant_id integer not null references hr_platform.consultant(id),
     skill_id integer not null references hr_platform.skill (id),
-    year_of_experience integer not null
+    years_of_experience integer not null
 );
 
 create table if not exists hr_platform.job_spec_requirements (
@@ -150,7 +150,7 @@ VALUES
   (2, '2017-01-01', '2019-12-31', 'Company D', 'Worked as a designer'),
   (2, '2019-06-01', '2022-12-31', 'Company E', 'Managed projects and communicated with clients');
 
-INSERT INTO hr_platform.cv_skills (consultant_id, skill_id, year_of_experience)
+INSERT INTO hr_platform.cv_skills (consultant_id, skill_id, years_of_experience)
 VALUES
   (1, 1, 3),
   (1, 2, 2),
