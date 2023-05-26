@@ -59,7 +59,7 @@ function initCrud(app, entity: string, tableName = entity, crudOptions?: CrudOpt
         creator: (req) => creator(req.body, tableName),
         deleter: req => deleter(req.params.id, tableName),
         getter: req => getter(`select * from ${tableName} where id = ${req.params.id}`), // todo
-        lister: () => getter(`select * from ${tableName}`), // todo
+        lister: (req) => getter(addFilterOrder(filterOrder(req.body.filtering), `select * from ${tableName}`)), // todo
         setter: () => getter(`select 1+1`), // todo
         ...crudOptions
     }
@@ -93,7 +93,10 @@ function initCrud(app, entity: string, tableName = entity, crudOptions?: CrudOpt
                     consultant.email_address AS consultant_email,
                     client.company_name,
                     commission.name as project_name,
-                    bills.amount
+                    bills.amount,
+                    bills.payed_date,
+                    bills.bill_identifier,
+                    bills.payed_date
                 FROM
                     hr_platform.bills
                     JOIN hr_platform.billable_entity AS billable_entity_source ON bills.source_billable_id = billable_entity_source.id
