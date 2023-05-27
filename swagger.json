@@ -232,6 +232,43 @@
           }
         }
       }
+    },
+    "/jobspecs/list": {
+      "post": {
+        "tags": ["job specs"],
+        "summary": "List job spec for commission",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilterOrder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "properties": {
+                    "item": {
+                      "type":"object",
+                      "properties": {
+                        "years_of_experience": {"type": "integer"},
+                        "skill_name": {"type": "string"},
+                        "project_name": {"type": "string"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

@@ -147,7 +147,24 @@ function initCrud(app, entity: string, tableName = entity, crudOptions?: CrudOpt
         ...enableListOnly
     })
 
-    
+    initCrud(app, 'jobspecs', null, {
+        lister: (req: any, res) => {
+            return getter(addFilterOrder(filterOrder(req.body.filtering || {}, {
+                project_name: `"commission"."name"`,
+                skill_name: `"skill"."name"`
+            }), `
+            select
+                job_spec_requirements.years_of_experience,
+                skill.name as skill_name,
+                commission.name as project_name
+            from hr_platform.job_spec_requirements
+            join hr_platform.skill on skill.id = job_spec_requirements.skill_id
+            join hr_platform.commission on commission.id = job_spec_requirements.commission_id
+        `))
+        },
+        ...enableListOnly
+    })
+
 
     app.listen(port, () => logger.info(`server listening on port ${port}`));
 })();
