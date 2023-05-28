@@ -26,9 +26,6 @@ export interface CrudOptions {
     beforeGet?: HookCallback
     beforeList?: HookCallback
 
-    converFromDb?: HookCallbackItem
-    converToDb?: HookCallbackItem,
-
     // middleware chains
     globalMiddlewares?: RequestHandler[]
     createMiddlewares?: RequestHandler[]
@@ -59,7 +56,6 @@ class CrudController {
     getCtrl: RequestHandler = async (req, res) => {
         await this.opts.beforeGet?.(req, res);
         let item = await this.opts.getter?.(req, res);
-        if (this.opts.converFromDb) item = this.opts.converFromDb(item);
         await this.opts.afterGet?.(req, res, item);
         reply(res, {item});
     }
@@ -81,7 +77,6 @@ class CrudController {
     listCtrl: RequestHandler = async (req, res) => {
         await this.opts.beforeList?.(req, res);
         let items = await this.opts.lister?.(req, res);
-        if (this.opts.converFromDb) items = items.map(item => this.opts.converFromDb(item));
         await this.opts.afterList?.(req, res, items);
         reply(res, {items});
     }
@@ -155,11 +150,15 @@ export function filterOrder(opts: FilterOrderParams, tablesMap?: {[x: string]: s
         "where " + opts.columns.map(c => {
             const isValueString = typeof c.value === 'string';
             const name = tablesMap?.[c.name] || c.name
+            // in cases where the column is provided with the table name. e.g. "table"."column"
             const isComposite = name.indexOf('.') !== -1;
             c.name = `${isComposite ? name : `"${name}"`}`;
             const _value = c.value;
             if (isValueString) c.value = `'${escape(c.value)}'`;
-            if (c.operator === '!') return `(NOT ${c.name} = ${c.value})`;
+            if (c.operator === '!') {
+                if (c.value === null) return `(${c.name} is not null)`
+                return `(NOT (${c.name} = ${c.value}))`
+            }
             else if (c.operator === 'ilike') return `(${c.name} ilike '%${_value}%')`;
             return `(${c.name} ${c.operator} ${c.value})`;
         }).join(` ${binaryOperator} `)
