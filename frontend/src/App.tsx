@@ -1,17 +1,10 @@
 import React from 'react';
 import { Layout, Menu } from 'antd';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import TestCrud from './components/TestCrud';
 
 function Home() {
-  return <div>ciao</div>
-}
-
-function About() {
-  return <div>about</div>
-}
-
-function Contact() {
-  return <div>contact</div>
+  return <div>home</div>
 }
 
 const { Sider, Content } = Layout;
@@ -26,10 +19,7 @@ function App() {
             <Link to="/">Home</Link>
           </Menu.Item>
           <Menu.Item key="about">
-            <Link to="/about">About</Link>
-          </Menu.Item>
-          <Menu.Item key="contact">
-            <Link to="/contact">Contact</Link>
+            <Link to="/test">Test</Link>
           </Menu.Item>
         </Menu>
       </Sider>
@@ -37,8 +27,7 @@ function App() {
         <Content style={{ padding: '20px' }}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
+            <Route path="/test" element={<TestCrud/>} />
           </Routes>
         </Content>
       </Layout>
