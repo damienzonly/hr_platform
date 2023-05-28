@@ -104,35 +104,35 @@ export function makeCrud(app: Express, resourceName: string, crudOptions: CrudOp
 
     // get single record
     if (_.isNil(crudOptions.enableGet) || crudOptions.enableGet) app.get(
-        `/${resourceName}/get/:id`,
+        `/api/${resourceName}/get/:id`,
         ...spread(crudOptions?.getMiddlewares),
         controller.getCtrl.bind(controller)
     );
 
     // create
     if (_.isNil(crudOptions.enableCreate) || crudOptions.enableCreate) app.put(
-        `/${resourceName}`,
+        `/api/${resourceName}`,
         ...spread(crudOptions?.createMiddlewares),
         controller.createCtrl.bind(controller)
     )
 
     // edit
     if (_.isNil(crudOptions.enableEdit) || crudOptions.enableEdit) app.put(
-        `/${resourceName}/:id`,
+        `/api/${resourceName}/:id`,
         ...spread(crudOptions?.editMiddlewares),
         controller.editCtrl.bind(controller)
     )
 
     // delete
     if (_.isNil(crudOptions.enableDelete) || crudOptions.enableDelete) app.delete(
-        `/${resourceName}/:id`,
+        `/api/${resourceName}/:id`,
         ...spread(crudOptions?.deleteMiddlewares),
         controller.deleteCtrl.bind(controller)
     )
     
     // list
     if (_.isNil(crudOptions.enableList) || crudOptions.enableList) app.post(
-        `/${resourceName}/list`,
+        `/api/${resourceName}/list`,
         ...spread(crudOptions?.listMiddlewares),
         controller.listCtrl.bind(controller)
     )
