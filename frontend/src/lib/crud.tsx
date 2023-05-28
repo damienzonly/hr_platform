@@ -3,7 +3,7 @@ import { Table, Button, Modal, Form, Input, message, Switch } from 'antd';
 import axios from 'axios';
 import _ from 'lodash'
 
-const http = axios.create({ headers: {'Content-Type': 'application/json'} });
+const http = axios.create({ baseURL: process.env.REACT_APP_SERVER_URL, headers: {'Content-Type': 'application/json'} });
 
 function calcFilters(filters, inclusive) {
   let _f = _.cloneDeep(filters)
@@ -43,7 +43,7 @@ const Crud = (props: {
 
     useEffect(() => {
       fetchData();
-    }, [filters])
+    }, [filters, inclusive])
 
   const fetchData = async () => {
     setLoading(true);
