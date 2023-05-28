@@ -31,15 +31,15 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=password
       - LOG_QUERIES=true
-  # nginx:
-  #   image: nginx
-  #   ports:
-  #     - 80:80
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf
-  #   depends_on:
-  #     - frontend
-  #     - server
-  # frontend:
-  #   build:
-  #     context: frontend
+  nginx:
+    image: nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - server
+  frontend:
+    build:
+      context: frontend
