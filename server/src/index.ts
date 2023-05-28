@@ -117,6 +117,7 @@ function initCrud(app, entity: string, tableName = entity, crudOptions?: CrudOpt
                 skill_name: `"skill"."name"`
             }), `
             select
+                cv_skills.id,
                 consultant.id as consultant_id,
                 consultant.email_address,
                 skill.name as skill_name,
@@ -133,6 +134,7 @@ function initCrud(app, entity: string, tableName = entity, crudOptions?: CrudOpt
         lister: (req: any, res) => {
             return getter(addFilterOrder(filterOrder(req.body.filtering || {}, { project_name: `"commission"."name"` }), `
             select
+                team_of_commission.id,
                 consultant.name,
                 consultant.surname,
                 consultant.email_address,
@@ -154,6 +156,7 @@ function initCrud(app, entity: string, tableName = entity, crudOptions?: CrudOpt
                 skill_name: `"skill"."name"`
             }), `
             select
+                job_spec_requirements.id,
                 job_spec_requirements.years_of_experience,
                 skill.name as skill_name,
                 commission.name as project_name
