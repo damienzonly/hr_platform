@@ -58,8 +58,8 @@ function initCrud(app, entity: string, tableName = entity, crudOptions?: CrudOpt
     const o: CrudOptions  = overrideCrudOptions ? crudOptions : {
         creator: (req) => creator(req.body, tableName),
         deleter: req => deleter(req.params.id, tableName),
-        getter: req => getter(`select * from ${tableName} where id = ${req.params.id}`), // todo
-        lister: (req) => getter(addFilterOrder(filterOrder(req.body.filtering), `select * from ${tableName}`)), // todo
+        getter: req => getter(`select * from ${tableName} where id = ${req.params.id}`),
+        lister: (req) => getter(addFilterOrder(filterOrder(req.body.filtering), `select * from ${tableName}`)),
         setter: () => getter(`select 1+1`), // todo
         ...crudOptions
     }
